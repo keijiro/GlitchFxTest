@@ -1,0 +1,10 @@
+{
+  "name": "jp.keijiro.kino-glitch",
+  "version": "1.0.0",
+  "displayName": "KinoGlitch",
+  "description": "Analog/digital glitch post-processing effects (renderer features) for URP",
+  "unity": "6000.0",
+  "author": "Keijiro Takahashi",
+  "dependencies": { "com.unity.render-pipelines.universal": "17.0.0" },
+  "license": "MIT"
+}
