@@ -4,36 +4,49 @@ HLSLINCLUDE
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Random.hlsl"
 
-float2 _ScanLineJitter;
-float2 _VerticalJump;
-float _HorizontalShake;
-float2 _ColorDrift;
+half _ScanLineJitter;
+half2 _VerticalJump;
+half _HorizontalShake;
+half2 _ColorDrift;
 
-float Nrand(float x, float y)
+half MirrorRepeat(half x) { return 1 - abs(frac(x * 0.5h) * 2 - 1); }
+
+half4 Frag(Varyings input) : SV_Target
 {
-    return frac(sin(dot(float2(x, y), float2(12.9898, 78.233))) * 43758.5453);
-}
+    half u = input.texcoord.x;
+    half v = input.texcoord.y;
 
-float4 Frag(Varyings input) : SV_Target
-{
-    float u = input.texcoord.x;
-    float v = input.texcoord.y;
+    // Vertical pixel coodinate
+    uint p_y = (uint)floor(v * _BlitTexture_TexelSize.w);
 
-    float jitter = Nrand(v, _TimeParameters.x) * 2 - 1;
-    jitter *= step(_ScanLineJitter.y, abs(jitter)) * _ScanLineJitter.x;
+    // Pseudo frame count
+    uint t = (uint)floor(_TimeParameters.x * 60.0);
 
-    float jump = lerp(v, frac(v + _VerticalJump.y), _VerticalJump.x);
-    float shake = (Nrand(_TimeParameters.x, 2) - 0.5) * _HorizontalShake;
-    float drift = sin(jump + _ColorDrift.y) * _ColorDrift.x;
+    // Scan line jitter: Random horizontal offset per scanline (low + high)
+    uint2 jitterSeed1 = uint2(p_y, t);
+    uint2 jitterSeed2 = uint2(p_y, t + 1000);
+    half jitter1 = GenerateHashedRandomFloat(jitterSeed1) * 2 - 1;
+    half jitter2 = GenerateHashedRandomFloat(jitterSeed2) * 2 - 1;
+    jitter2 = jitter2 * jitter2 * jitter2 * jitter2 * jitter2;
+    half jitter = (jitter1 + jitter2 * 2.5) * _ScanLineJitter;
 
-    float2 uv1 = frac(float2(u + jitter + shake, jump));
-    float2 uv2 = frac(float2(u + jitter + shake + drift, jump));
+    // Vertical jump
+    half v_disp = frac(v + _VerticalJump.y);
+    v_disp = max(1 - smoothstep(0, 0.05, v_disp), v_disp);
+    half jump = lerp(v, v_disp, _VerticalJump.x);
 
-    float4 src1 = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv1);
-    float4 src2 = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2);
+    // Color drift
+    half drift = sin(jump + _ColorDrift.y) * _ColorDrift.x;
 
-    return float4(src1.r, src2.g, src1.b, 1);
+    // Displaced samples
+    half2 uv1 = half2(MirrorRepeat(u + jitter + _HorizontalShake), jump);
+    half2 uv2 = half2(MirrorRepeat(u + jitter + _HorizontalShake + drift), jump);
+    half4 src1 = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv1);
+    half4 src2 = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2);
+
+    return half4(src1.r, src2.g, src1.b, 1);
 }
 
 ENDHLSL

@@ -10,6 +10,9 @@ public sealed partial class AnalogGlitchController : MonoBehaviour
     void OnDestroy() => ReleaseResources();
 
     void OnDisable() => ReleaseResources();
+
+    void Update()
+      => _verticalJumpTime += Time.deltaTime * VerticalJump * 11.3f;
 }
 
 } // namespace KinoGlitch
