@@ -9,7 +9,7 @@ HLSLINCLUDE
 half _ScanLineJitter;
 half2 _VerticalJump;
 half _HorizontalShake;
-half2 _ColorDrift;
+half4 _ColorDrift;
 
 half MirrorRepeat(half x) { return 1 - abs(frac(x * 0.5h) * 2 - 1); }
 
@@ -38,15 +38,18 @@ half4 Frag(Varyings input) : SV_Target
     half jump = lerp(v, v_disp, _VerticalJump.x);
 
     // Color drift
-    half drift = sin(jump + _ColorDrift.y) * _ColorDrift.x;
+    half3 drift = sin(jump + _ColorDrift.xyz) * _ColorDrift.w;
 
     // Displaced samples
-    half2 uv1 = half2(MirrorRepeat(u + jitter + _HorizontalShake), jump);
-    half2 uv2 = half2(MirrorRepeat(u + jitter + _HorizontalShake + drift), jump);
-    half4 src1 = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv1);
-    half4 src2 = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2);
+    half x = u + jitter + _HorizontalShake;
+    half2 uv1 = half2(MirrorRepeat(x + drift.x), jump);
+    half2 uv2 = half2(MirrorRepeat(x + drift.y), jump);
+    half2 uv3 = half2(MirrorRepeat(x + drift.z), jump);
+    half r = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv1).r;
+    half g = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2).g;
+    half b = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv3).b;
 
-    return half4(src1.r, src2.g, src1.b, 1);
+    return half4(r, g, b, 1);
 }
 
 ENDHLSL
