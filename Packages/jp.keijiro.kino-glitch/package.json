@@ -5,6 +5,9 @@
   "description": "Analog/digital glitch post-processing effects (renderer features) for URP",
   "unity": "6000.0",
   "author": "Keijiro Takahashi",
-  "dependencies": { "com.unity.render-pipelines.universal": "17.0.0" },
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.0.0",
+    "jp.keijiro.noiseshader": "3.0.1"
+  },
   "license": "MIT"
 }

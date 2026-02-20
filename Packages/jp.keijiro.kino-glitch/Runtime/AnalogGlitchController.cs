@@ -38,14 +38,14 @@ public sealed class AnalogGlitchController : MonoBehaviour
 
         _material.SetFloat(ShaderIDs.ScanLineJitter, ScanLineJitter * 0.05f);
 
-        var jump = new Vector2(VerticalJump, _verticalJumpTime);
+        var jump = new Vector2(VerticalJump, _verticalJumpTime % 600);
         _material.SetVector(ShaderIDs.VerticalJump, jump);
 
         var shake = (Random.value * 2 - 1) * HorizontalShake * 0.1f;
         _material.SetFloat(ShaderIDs.HorizontalShake, shake);
 
-        var time = Time.time * 606.11f;
-        var drift = new Vector4(time * 0.97f, time * 1.11f, time * 1.29f, ColorDrift * 0.04f);
+        var t = (Time.time % 600) * 10.11f;
+        var drift = new Vector4(t, t * 1.11f, t * 1.29f, ColorDrift * 0.04f);
         _material.SetVector(ShaderIDs.ColorDrift, drift);
 
         return _material;

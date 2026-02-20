@@ -5,6 +5,7 @@ HLSLINCLUDE
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Random.hlsl"
+#include "Packages/jp.keijiro.noiseshader/Shader/Noise1D.hlsl"
 
 half _ScanLineJitter;
 half2 _VerticalJump;
@@ -38,13 +39,15 @@ half4 Frag(Varyings input) : SV_Target
     half jump = lerp(v, v_disp, _VerticalJump.x);
 
     // Color drift
-    half3 drift = sin(jump + _ColorDrift.xyz) * _ColorDrift.w;
+    half drift1 = GradientNoise(jump * 1.5 + _ColorDrift.x, 1) * _ColorDrift.w;
+    half drift2 = GradientNoise(jump * 1.5 + _ColorDrift.y, 2) * _ColorDrift.w;
+    half drift3 = GradientNoise(jump * 1.5 + _ColorDrift.z, 3) * _ColorDrift.w;
 
     // Displaced samples
     half x = u + jitter + _HorizontalShake;
-    half2 uv1 = half2(MirrorRepeat(x + drift.x), jump);
-    half2 uv2 = half2(MirrorRepeat(x + drift.y), jump);
-    half2 uv3 = half2(MirrorRepeat(x + drift.z), jump);
+    half2 uv1 = half2(MirrorRepeat(x + drift1), jump);
+    half2 uv2 = half2(MirrorRepeat(x + drift2), jump);
+    half2 uv3 = half2(MirrorRepeat(x + drift3), jump);
     half r = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv1).r;
     half g = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2).g;
     half b = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv3).b;
