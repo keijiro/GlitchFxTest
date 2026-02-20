@@ -21,6 +21,9 @@ public sealed class AnalogGlitchController : MonoBehaviour
     [field:SerializeField, Range(0, 1)]
     public float ColorDrift { get; set; }
 
+    [field:SerializeField, Range(0, 1)]
+    public float HorizontalRipple { get; set; }
+
     [SerializeField, HideInInspector] Shader _shader = null;
 
     Material _material;
@@ -47,6 +50,8 @@ public sealed class AnalogGlitchController : MonoBehaviour
         var t = (Time.time % 600) * 10.11f;
         var drift = new Vector4(t, t * 1.11f, t * 1.29f, ColorDrift * 0.04f);
         _material.SetVector(ShaderIDs.ColorDrift, drift);
+
+        _material.SetFloat(ShaderIDs.HorizontalRipple, HorizontalRipple);
 
         return _material;
     }
