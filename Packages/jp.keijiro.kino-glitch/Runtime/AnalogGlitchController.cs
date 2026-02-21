@@ -47,10 +47,7 @@ public sealed class AnalogGlitchController : MonoBehaviour
         var shake = (Random.value * 2 - 1) * HorizontalShake * 0.1f;
         _material.SetFloat(ShaderIDs.HorizontalShake, shake);
 
-        var t = (Time.time % 600) * 10.11f;
-        var drift = new Vector4(t, t * 1.11f, t * 1.29f, ColorDrift * 0.04f);
-        _material.SetVector(ShaderIDs.ColorDrift, drift);
-
+        _material.SetFloat(ShaderIDs.ColorDrift, ColorDrift);
         _material.SetFloat(ShaderIDs.HorizontalRipple, HorizontalRipple);
 
         return _material;
