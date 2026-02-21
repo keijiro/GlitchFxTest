@@ -25,9 +25,7 @@ public sealed class DigitalGlitchController : MonoBehaviour
     void OnDisable() => ReleaseResources();
 
     void Update()
-    {
-        if (Random.value > Mathf.Lerp(0.9f, 0.5f, Intensity)) _noise?.Update();
-    }
+      => _noise?.Update();
 
     void ReleaseResources()
     {
