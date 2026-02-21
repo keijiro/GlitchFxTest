@@ -24,6 +24,11 @@ public sealed class DigitalGlitchController : MonoBehaviour
 
     void OnDisable() => ReleaseResources();
 
+    void Update()
+    {
+        if (Random.value > Mathf.Lerp(0.9f, 0.5f, Intensity)) _noise?.Update();
+    }
+
     void ReleaseResources()
     {
         CoreUtils.Destroy(_material);
@@ -57,8 +62,6 @@ public sealed class DigitalGlitchController : MonoBehaviour
 
     public Material UpdateMaterial()
     {
-        if (Random.value > Mathf.Lerp(0.9f, 0.5f, Intensity)) _noise.Update();
-
         _material.SetFloat(ShaderIDs.Intensity, Intensity);
         _material.SetTexture(ShaderIDs.NoiseTex, _noise.Texture);
         var trash = Random.value > 0.5f ? _trashFrame1.rt : _trashFrame2.rt;
