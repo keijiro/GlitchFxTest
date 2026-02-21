@@ -16,12 +16,9 @@ public sealed class DigitalGlitchController : MonoBehaviour
     [SerializeField, HideInInspector] Shader _shader = null;
 
     Material _material;
-    Texture2D _noiseTexture;
+    DigitalGlitchNoiseTexture _noise;
     RTHandle _trashFrame1;
     RTHandle _trashFrame2;
-
-    static Color RandomColor()
-      => new(Random.value, Random.value, Random.value, Random.value);
 
     void OnDestroy() => ReleaseResources();
 
@@ -30,11 +27,11 @@ public sealed class DigitalGlitchController : MonoBehaviour
     void ReleaseResources()
     {
         CoreUtils.Destroy(_material);
-        CoreUtils.Destroy(_noiseTexture);
+        _noise?.Dispose();
         _trashFrame1?.Release();
         _trashFrame2?.Release();
         _material = null;
-        _noiseTexture = null;
+        _noise = null;
         _trashFrame1 = null;
         _trashFrame2 = null;
     }
@@ -44,34 +41,12 @@ public sealed class DigitalGlitchController : MonoBehaviour
         if (_shader == null) _shader = Shader.Find("Hidden/KinoGlitch/Digital");
         if (_material == null) _material = CoreUtils.CreateEngineMaterial(_shader);
 
-        if (_noiseTexture == null)
-        {
-            _noiseTexture = new Texture2D(64, 32, TextureFormat.ARGB32, false)
-            {
-                wrapMode = TextureWrapMode.Clamp,
-                filterMode = FilterMode.Point
-            };
-            UpdateNoiseTexture();
-        }
+        _noise ??= new DigitalGlitchNoiseTexture(64, 32);
 
         if (_trashFrame1 != null) return;
 
         _trashFrame1 = RTHandles.Alloc(Vector3.one, format, name: "_KinoGlitch_TrashFrame1");
         _trashFrame2 = RTHandles.Alloc(Vector3.one, format, name: "_KinoGlitch_TrashFrame2");
-    }
-
-    void UpdateNoiseTexture()
-    {
-        var color = RandomColor();
-
-        for (var y = 0; y < _noiseTexture.height; y++)
-        for (var x = 0; x < _noiseTexture.width; x++)
-        {
-            if (Random.value > 0.89f) color = RandomColor();
-            _noiseTexture.SetPixel(x, y, color);
-        }
-
-        _noiseTexture.Apply();
     }
 
     public RTHandle ConsumeTrashFrame1()
@@ -82,10 +57,10 @@ public sealed class DigitalGlitchController : MonoBehaviour
 
     public Material UpdateMaterial()
     {
-        if (Random.value > Mathf.Lerp(0.9f, 0.5f, Intensity)) UpdateNoiseTexture();
+        if (Random.value > Mathf.Lerp(0.9f, 0.5f, Intensity)) _noise.Update();
 
         _material.SetFloat(ShaderIDs.Intensity, Intensity);
-        _material.SetTexture(ShaderIDs.NoiseTex, _noiseTexture);
+        _material.SetTexture(ShaderIDs.NoiseTex, _noise.Texture);
         var trash = Random.value > 0.5f ? _trashFrame1.rt : _trashFrame2.rt;
         _material.SetTexture(ShaderIDs.TrashTex, trash);
 
