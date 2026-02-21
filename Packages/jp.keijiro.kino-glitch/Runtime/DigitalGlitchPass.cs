@@ -45,7 +45,7 @@ sealed class DigitalGlitchPass : ScriptableRenderPass
         desc.depthBufferBits = 0;
         var dest = renderGraph.CreateTexture(desc);
 
-        var glitch = controller.UpdateMaterial();
+        var glitch = controller.UpdateMaterial(desc.width, desc.height);
         var blit = new RenderGraphUtils.BlitMaterialParameters(source, dest, glitch, 0);
         renderGraph.AddBlitPass(blit, passName: "KinoGlitch (Digital)");
 

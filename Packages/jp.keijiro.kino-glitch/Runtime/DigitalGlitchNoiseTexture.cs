@@ -11,6 +11,8 @@ namespace KinoGlitch {
 [BurstCompile]
 sealed class DigitalGlitchNoiseTexture : IDisposable
 {
+    public const int TextureWidth = 2048;
+
     public Texture2D Texture { get; private set; }
     NativeArray<Color32> _pixels;
 
@@ -40,14 +42,14 @@ sealed class DigitalGlitchNoiseTexture : IDisposable
         }
     }
 
-    public DigitalGlitchNoiseTexture(int width, int height)
+    public DigitalGlitchNoiseTexture()
     {
-        Texture = new Texture2D(width, height, TextureFormat.ARGB32, false)
+        Texture = new Texture2D(TextureWidth, 1, TextureFormat.ARGB32, false)
         {
-            wrapMode = TextureWrapMode.Clamp,
+            wrapMode = TextureWrapMode.Repeat,
             filterMode = FilterMode.Point
         };
-        _pixels = new NativeArray<Color32>(width * height, Allocator.Persistent);
+        _pixels = new NativeArray<Color32>(TextureWidth, Allocator.Persistent);
         Update();
     }
 

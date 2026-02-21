@@ -12,6 +12,9 @@ static class ShaderPropertyIDs
     public static readonly int Intensity = Shader.PropertyToID("_Intensity");
     public static readonly int NoiseTex = Shader.PropertyToID("_NoiseTex");
     public static readonly int TrashTex = Shader.PropertyToID("_TrashTex");
+    public static readonly int BlockCols = Shader.PropertyToID("_BlockCols");
+    public static readonly int BlockRows = Shader.PropertyToID("_BlockRows");
+    public static readonly int Threshold = Shader.PropertyToID("_Threshold");
 }
 
 } // namespace KinoGlitch

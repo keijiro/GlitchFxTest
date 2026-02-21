@@ -9,19 +9,25 @@ TEXTURE2D_X(_NoiseTex);
 TEXTURE2D_X(_TrashTex);
 SAMPLER(sampler_NoiseTex);
 SAMPLER(sampler_TrashTex);
+float4 _NoiseTex_TexelSize;
+float4 _TrashTex_TexelSize;
 
-float _Intensity;
+int _BlockCols;
+int _BlockRows;
+float _Threshold;
 
 float4 Frag(Varyings input) : SV_Target
 {
     float2 uv = input.texcoord;
 
-    float4 glitch = SAMPLE_TEXTURE2D_X(_NoiseTex, sampler_NoiseTex, uv);
+    int2 block = (int2)(uv * float2(_BlockCols, _BlockRows));
+    float nx = (block.x + block.y * _BlockCols + 0.5) * _NoiseTex_TexelSize.x;
 
-    float thresh = 1.001 - _Intensity * 1.001;
-    float wD = step(thresh, pow(glitch.z, 2.5));
-    float wF = step(thresh, pow(glitch.w, 2.5));
-    float wC = step(thresh, pow(glitch.z, 3.5));
+    float4 glitch = SAMPLE_TEXTURE2D_X(_NoiseTex, sampler_NoiseTex, float2(nx, 0.5));
+
+    float wD = step(_Threshold, pow(glitch.z, 2.5));
+    float wF = step(_Threshold, pow(glitch.w, 2.5));
+    float wC = step(_Threshold, pow(glitch.z, 3.5));
 
     float2 duv = frac(uv + glitch.xy * wD);
     float4 source = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, duv);

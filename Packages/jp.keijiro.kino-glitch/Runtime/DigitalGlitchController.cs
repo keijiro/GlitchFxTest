@@ -44,7 +44,7 @@ public sealed class DigitalGlitchController : MonoBehaviour
         if (_shader == null) _shader = Shader.Find("Hidden/KinoGlitch/Digital");
         if (_material == null) _material = CoreUtils.CreateEngineMaterial(_shader);
 
-        _noise ??= new DigitalGlitchNoiseTexture(64, 32);
+        _noise ??= new DigitalGlitchNoiseTexture();
 
         if (_trashFrame1 != null) return;
 
@@ -58,10 +58,17 @@ public sealed class DigitalGlitchController : MonoBehaviour
     public RTHandle ConsumeTrashFrame2()
       => Time.frameCount % 73 == 0 ? _trashFrame2 : null;
 
-    public Material UpdateMaterial()
+    public Material UpdateMaterial(int width, int height)
     {
-        _material.SetFloat(ShaderIDs.Intensity, Intensity);
+        var aspect = (float)width / height;
+        var rows = Mathf.RoundToInt(Mathf.Sqrt((float)DigitalGlitchNoiseTexture.TextureWidth / aspect));
+        var cols = Mathf.RoundToInt(rows * aspect);
+        var threshold = 1.001f - Intensity * 1.001f;
+
         _material.SetTexture(ShaderIDs.NoiseTex, _noise.Texture);
+        _material.SetInt(ShaderIDs.BlockCols, cols);
+        _material.SetInt(ShaderIDs.BlockRows, rows);
+        _material.SetFloat(ShaderIDs.Threshold, threshold);
         var trash = Random.value > 0.5f ? _trashFrame1.rt : _trashFrame2.rt;
         _material.SetTexture(ShaderIDs.TrashTex, trash);
 
