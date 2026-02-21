@@ -27,7 +27,7 @@ public sealed class AnalogGlitchController : MonoBehaviour
     [SerializeField, HideInInspector] Shader _shader = null;
 
     Material _material;
-    float _verticalJumpTime;
+    float _jumpTime;
 
     void ReleaseResources()
     {
@@ -41,7 +41,7 @@ public sealed class AnalogGlitchController : MonoBehaviour
 
         _material.SetFloat(ShaderIDs.ScanLineJitter, ScanLineJitter * 0.05f);
 
-        var jump = new Vector2(VerticalJump, _verticalJumpTime % 600);
+        var jump = new Vector2(VerticalJump, _jumpTime);
         _material.SetVector(ShaderIDs.VerticalJump, jump);
 
         var shake = (Random.value * 2 - 1) * HorizontalShake * 0.1f;
@@ -58,7 +58,7 @@ public sealed class AnalogGlitchController : MonoBehaviour
     void OnDisable() => ReleaseResources();
 
     void Update()
-      => _verticalJumpTime += Time.deltaTime * VerticalJump * 11.3f;
+      => _jumpTime = (_jumpTime + Time.deltaTime * VerticalJump * 11.3f) % 600;
 }
 
 } // namespace KinoGlitch
