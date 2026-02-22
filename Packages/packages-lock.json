@@ -129,8 +129,8 @@
         "com.unity.render-pipelines.core": "17.3.0"
       }
     },
-    "jp.keijiro.kino-glitch": {
-      "version": "file:jp.keijiro.kino-glitch",
+    "jp.keijiro.kino-glitch.universal": {
+      "version": "file:jp.keijiro.kino-glitch.universal",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
