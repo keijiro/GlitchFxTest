@@ -47,7 +47,7 @@ half4 Frag(Varyings input) : SV_Target
 
     // Horizontal ripple
     half burst = abs(noise1);
-    burst = burst / (burst + (1 - burst) * lerp(20, 1, _HorizontalRipple));
+    burst = burst / (burst + (1 - burst) * lerp(6, 1, _HorizontalRipple));
     half wiggle = abs(GradientNoise(jump * 20 + t * 16, 12));
     half ripple = 0.3 * _HorizontalRipple * burst * (wiggle + abs(jitter2));
 
