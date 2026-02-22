@@ -32,17 +32,29 @@ renderer feature. By default, they run after post processing.
 
 **Scan Line Jitter** adds horizontal jitter along scanlines.
 
+![GIF](https://github.com/user-attachments/assets/e1ac0fef-0d53-4728-b3c3-15a6672f8e2b)
+
 **Vertical Jump** offsets the image vertically with a continuous jump motion.
+
+![GIF](https://github.com/user-attachments/assets/664f27a7-97e0-4073-975d-58c6a89a214c)
 
 **Horizontal Shake** adds discontinuous horizontal shake.
 
+![GIF](https://github.com/user-attachments/assets/e5a16274-5dcb-492b-856a-40501d525f15)
+
 **Color Drift** shifts chroma components over time.
 
+![GIF](https://github.com/user-attachments/assets/a0d2ea9d-9b3e-42bd-becc-b5698c022543)
+
 **Horizontal Ripple** warps horizontal UVs with a line-dependent ripple.
+
+![GIF](https://github.com/user-attachments/assets/e38d0a73-6ad2-40e9-b6a1-daa5846a0d60)
 
 ## Digital Glitch properties
 
 **Intensity** controls the amount of digital corruption and block replacement.
+
+![GIF](https://github.com/user-attachments/assets/c68ace9e-3ba7-43d3-a39e-63deff42c33d)
 
 ## Performance notes
 
