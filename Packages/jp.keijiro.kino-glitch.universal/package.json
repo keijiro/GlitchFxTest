@@ -1,7 +1,7 @@
 {
   "name": "jp.keijiro.kino-glitch.universal",
   "version": "1.0.0",
-  "displayName": "KinoGlitch",
+  "displayName": "KinoGlitch URP",
   "description": "Analog/digital glitch post-processing effects (renderer features) for URP",
   "unity": "6000.0",
   "author": "Keijiro Takahashi",
@@ -9,5 +9,9 @@
     "com.unity.render-pipelines.universal": "17.0.0",
     "jp.keijiro.noiseshader": "3.0.1"
   },
-  "license": "MIT"
+  "changelogUrl": "https://github.com/keijiro/KinoGlitchURP/blob/master/CHANGELOG.md",
+  "documentationUrl": "https://github.com/keijiro/KinoGlitchURP",
+  "licensesUrl": "https://github.com/keijiro/KinoGlitchURP/blob/master/LICENSE",
+  "license": "Unlicense",
+  "_upm": { "changelog": "" }
 }
