@@ -41,7 +41,7 @@ half4 Frag(Varyings input) : SV_Target
     half jump = lerp(v, v_disp, _VerticalJump.x);
 
     // Color drift
-    half drift = _ColorDrift * 0.03;
+    half drift = _ColorDrift * 0.1;
     half noise1 = GradientNoise(jump * 1.5 - t * 10.11, 1);
     half noise2 = GradientNoise(jump * 1.5 - t * 13.04, 2);
 
