@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Name: DigitalGlitchRendererFeature
   m_EditorClassIdentifier: KinoGlitch.Runtime::KinoGlitch.DigitalGlitchRendererFeature
   m_Active: 1
-  _passEvent: 550
+  _passEvent: 600
 --- !u!114 &7899069908957553611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,4 +82,4 @@ MonoBehaviour:
   m_Name: AnalogGlitchRendererFeature
   m_EditorClassIdentifier: KinoGlitch.Runtime::KinoGlitch.AnalogGlitchRendererFeature
   m_Active: 1
-  _passEvent: 550
+  _passEvent: 600

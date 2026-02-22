@@ -7,7 +7,7 @@ namespace KinoGlitch {
 sealed class DigitalGlitchRendererFeature : ScriptableRendererFeature
 {
     [SerializeField] RenderPassEvent _passEvent =
-      RenderPassEvent.BeforeRenderingPostProcessing;
+      RenderPassEvent.AfterRenderingPostProcessing;
 
     DigitalGlitchPass _pass;
 

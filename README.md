@@ -25,6 +25,9 @@ to add the registry to your project.
 2. Add **AnalogGlitchController** and/or **DigitalGlitchController** to a
    Camera.
 
+You can change the injection point with the `Pass Event` property on either
+renderer feature. By default, they run after post processing.
+
 ## Analog Glitch properties
 
 **Scan Line Jitter** adds horizontal jitter along scanlines.

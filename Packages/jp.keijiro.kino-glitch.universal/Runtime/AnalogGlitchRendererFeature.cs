@@ -7,7 +7,7 @@ namespace KinoGlitch {
 sealed class AnalogGlitchRendererFeature : ScriptableRendererFeature
 {
     [SerializeField] RenderPassEvent _passEvent =
-      RenderPassEvent.BeforeRenderingPostProcessing;
+      RenderPassEvent.AfterRenderingPostProcessing;
 
     AnalogGlitchPass _pass;
 
