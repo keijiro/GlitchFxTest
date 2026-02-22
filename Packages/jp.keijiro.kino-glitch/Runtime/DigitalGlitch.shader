@@ -14,7 +14,7 @@ float4 _HistoryTex_TexelSize;
 
 int _BlockCols;
 int _BlockRows;
-float _Threshold;
+half _Threshold;
 
 half3 DamageColor(half3 color)
 {
@@ -31,24 +31,24 @@ float4 Frag(Varyings input) : SV_Target
     float nx = (block.x + block.y * _BlockCols + 0.5) * _NoiseTex_TexelSize.x;
 
     // Noise sample
-    float4 glitch = SAMPLE_TEXTURE2D_X(_NoiseTex, sampler_NoiseTex, float2(nx, 0.5));
-    float4 glitch2 = glitch * glitch;
-    float glitch_ex = frac(glitch.x * 83.32);
+    half4 glitch = SAMPLE_TEXTURE2D_X(_NoiseTex, sampler_NoiseTex, float2(nx, 0.5));
+    half4 glitch2 = glitch * glitch;
+    half glitch_ex = frac(glitch.x * 83.32);
 
     // Displacement
     if (_Threshold < glitch2.z) uv = frac(uv + glitch.xy);
 
     // Color source samples
-    float4 src_cur = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv);
-    float4 src_prev = SAMPLE_TEXTURE2D_X(_HistoryTex, sampler_LinearClamp, uv);
+    half4 src_cur = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv);
+    half4 src_prev = SAMPLE_TEXTURE2D_X(_HistoryTex, sampler_LinearClamp, uv);
 
     // Sample selection
-    float3 color = _Threshold < glitch2.w ? src_prev : src_cur;
+    half3 color = _Threshold < glitch2.w ? src_prev : src_cur;
 
     // Damaged blocks
     if (_Threshold * 0.2 + 0.8 < glitch_ex) color = DamageColor(color);
 
-    return float4(color, src_cur.a);
+    return half4(color, src_cur.a);
 }
 
 ENDHLSL
