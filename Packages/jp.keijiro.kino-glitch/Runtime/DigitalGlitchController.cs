@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
@@ -17,61 +18,57 @@ public sealed class DigitalGlitchController : MonoBehaviour
 
     Material _material;
     DigitalGlitchNoiseTexture _noise;
-    RTHandle _trashFrame1;
-    RTHandle _trashFrame2;
+    (RTHandle frame1, RTHandle frame2) _history;
 
     void OnDestroy() => ReleaseResources();
 
     void OnDisable() => ReleaseResources();
 
-    void Update()
-      => _noise?.Update();
+    void Update() => _noise?.Update();
 
     void ReleaseResources()
     {
         CoreUtils.Destroy(_material);
         _noise?.Dispose();
-        _trashFrame1?.Release();
-        _trashFrame2?.Release();
+        _history.frame1?.Release();
+        _history.frame2?.Release();
         _material = null;
         _noise = null;
-        _trashFrame1 = null;
-        _trashFrame2 = null;
+        _history = (null, null);
     }
 
     public void PrepareBuffers(GraphicsFormat format)
     {
-        if (_shader == null) _shader = Shader.Find("Hidden/KinoGlitch/Digital");
-        if (_material == null) _material = CoreUtils.CreateEngineMaterial(_shader);
-
-        _noise ??= new DigitalGlitchNoiseTexture();
-
-        if (_trashFrame1 != null) return;
-
-        _trashFrame1 = RTHandles.Alloc(Vector3.one, format, name: "_KinoGlitch_TrashFrame1");
-        _trashFrame2 = RTHandles.Alloc(Vector3.one, format, name: "_KinoGlitch_TrashFrame2");
+        if (_history.frame1 != null) return;
+        _history.frame1 = RTHandles.Alloc(Vector3.one, format, name: "_KinoGlitch_History1");
+        _history.frame2 = RTHandles.Alloc(Vector3.one, format, name: "_KinoGlitch_History2");
     }
 
-    public RTHandle ConsumeTrashFrame1()
-      => Time.frameCount % 13 == 0 ? _trashFrame1 : null;
-
-    public RTHandle ConsumeTrashFrame2()
-      => Time.frameCount % 73 == 0 ? _trashFrame2 : null;
+    public RTHandle ConsumeHistoryFrame()
+    {
+        if (Time.frameCount % 13 == 0) return _history.frame1;
+        if (Time.frameCount % 73 == 0) return _history.frame2;
+        return null;
+    }
 
     public Material UpdateMaterial(int width, int height)
     {
-        var aspect = (float)width / height;
-        var rows = Mathf.RoundToInt(Mathf.Sqrt((float)DigitalGlitchNoiseTexture.TextureWidth / aspect));
-        var cols = Mathf.RoundToInt(rows * aspect);
-        var threshold = 1.001f - Intensity * 1.001f;
+        if (_material == null) _material = CoreUtils.CreateEngineMaterial(_shader);
+        _noise ??= new DigitalGlitchNoiseTexture();
 
-        _material.SetTexture(ShaderIDs.NoiseTex, _noise.Texture);
+        var blocks = DigitalGlitchNoiseTexture.TextureWidth;
+        var aspect = (float)width / height;
+        var rows = Mathf.RoundToInt(Mathf.Sqrt(blocks / aspect));
+        var cols = Mathf.RoundToInt(rows * aspect);
+
+        var flag = (math.hash(math.int2(Time.frameCount, 1)) & 1) != 0;
+        var history = flag ? _history.frame1.rt : _history.frame2.rt;
+
         _material.SetInt(ShaderIDs.BlockCols, cols);
         _material.SetInt(ShaderIDs.BlockRows, rows);
-        _material.SetFloat(ShaderIDs.Threshold, threshold);
-        var trash = Random.value > 0.5f ? _trashFrame1.rt : _trashFrame2.rt;
-        _material.SetTexture(ShaderIDs.TrashTex, trash);
-
+        _material.SetFloat(ShaderIDs.Threshold, 1 - Intensity);
+        _material.SetTexture(ShaderIDs.NoiseTex, _noise.Texture);
+        _material.SetTexture(ShaderIDs.HistoryTex, history);
         return _material;
     }
 }

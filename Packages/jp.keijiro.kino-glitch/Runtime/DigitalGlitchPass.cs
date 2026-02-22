@@ -22,22 +22,13 @@ sealed class DigitalGlitchPass : ScriptableRenderPass
         var desc = renderGraph.GetTextureDesc(source);
         controller.PrepareBuffers(desc.format);
 
-        var trash1 = controller.ConsumeTrashFrame1();
-        if (trash1 != null)
+        var history = controller.ConsumeHistoryFrame();
+        if (history != null)
         {
-            var imported = renderGraph.ImportTexture(trash1);
+            var imported = renderGraph.ImportTexture(history);
             var mat = Blitter.GetBlitMaterial(TextureDimension.Tex2D);
             var param = new RenderGraphUtils.BlitMaterialParameters(source, imported, mat, 0);
-            renderGraph.AddBlitPass(param, passName: "KinoGlitch (Trash 1)");
-        }
-
-        var trash2 = controller.ConsumeTrashFrame2();
-        if (trash2 != null)
-        {
-            var imported = renderGraph.ImportTexture(trash2);
-            var mat = Blitter.GetBlitMaterial(TextureDimension.Tex2D);
-            var param = new RenderGraphUtils.BlitMaterialParameters(source, imported, mat, 0);
-            renderGraph.AddBlitPass(param, passName: "KinoGlitch (Trash 2)");
+            renderGraph.AddBlitPass(param, passName: "KinoGlitch (History)");
         }
 
         desc.name = "_KinoDigitalGlitchColor";

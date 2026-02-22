@@ -6,11 +6,11 @@ HLSLINCLUDE
 #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
 TEXTURE2D_X(_NoiseTex);
-TEXTURE2D_X(_TrashTex);
+TEXTURE2D_X(_HistoryTex);
 SAMPLER(sampler_NoiseTex);
-SAMPLER(sampler_TrashTex);
+SAMPLER(sampler_HistoryTex);
 float4 _NoiseTex_TexelSize;
-float4 _TrashTex_TexelSize;
+float4 _HistoryTex_TexelSize;
 
 int _BlockCols;
 int _BlockRows;
@@ -32,17 +32,17 @@ float4 Frag(Varyings input) : SV_Target
     float2 uv2 = _Threshold < glitch2.z ? frac(uv + glitch.xy) : uv;
 
     // Color source samples
-    float4 src_curr = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2);
-    float4 src_prev = SAMPLE_TEXTURE2D_X(_TrashTex, sampler_LinearClamp, uv2);
+    float4 src_cur = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2);
+    float4 src_prev = SAMPLE_TEXTURE2D_X(_HistoryTex, sampler_LinearClamp, uv2);
 
     // Sample selection
-    float3 color = _Threshold < glitch2.w ? src_prev : src_curr;
+    float3 color = _Threshold < glitch2.w ? src_prev : src_cur;
 
     // Negate
     float3 neg = saturate(color.grb + (1 - dot(color, float3(1, 1, 1))) * 0.5);
     color = _Threshold < glitch2.z ? neg : color;
 
-    return float4(color, src_curr.a);
+    return float4(color, src_cur.a);
 }
 
 ENDHLSL
