@@ -35,6 +35,11 @@ public sealed class AnalogGlitchController : MonoBehaviour
         _material = null;
     }
 
+    public bool IsActive
+      => ScanLineJitter > 0 || VerticalJump > 0 ||
+         HorizontalShake > 0 || ColorDrift > 0 ||
+         HorizontalRipple > 0;
+
     public Material UpdateMaterial()
     {
         if (_material == null) _material = CoreUtils.CreateEngineMaterial(_shader);

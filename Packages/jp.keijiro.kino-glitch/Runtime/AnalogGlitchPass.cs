@@ -11,7 +11,7 @@ sealed class AnalogGlitchPass : ScriptableRenderPass
     {
         var camera = frameData.Get<UniversalCameraData>().camera;
         var controller = camera.GetComponent<AnalogGlitchController>();
-        if (controller == null || !controller.enabled) return;
+        if (controller == null || !controller.enabled || !controller.IsActive) return;
 
         var resourceData = frameData.Get<UniversalResourceData>();
         if (resourceData.isActiveTargetBackBuffer) return;

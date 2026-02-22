@@ -37,6 +37,8 @@ public sealed class DigitalGlitchController : MonoBehaviour
         _history = (null, null);
     }
 
+    public bool IsActive => Intensity > 0;
+
     public void PrepareBuffers(GraphicsFormat format)
     {
         if (_history.frame1 != null) return;

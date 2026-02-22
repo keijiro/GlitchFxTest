@@ -31,6 +31,8 @@ sealed class DigitalGlitchPass : ScriptableRenderPass
             renderGraph.AddBlitPass(param, passName: "KinoGlitch (History)");
         }
 
+        if (!controller.IsActive) return;
+
         desc.name = "_KinoDigitalGlitchColor";
         desc.clearBuffer = false;
         desc.depthBufferBits = 0;
