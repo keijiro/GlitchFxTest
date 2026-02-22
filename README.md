@@ -1,5 +1,7 @@
 # KinoGlitch URP
 
+![GIF](https://github.com/user-attachments/assets/7d6618aa-0415-45f6-a1f1-a069f8ad97ed)
+
 **KinoGlitch URP** is a Unity URP renderer feature package that provides analog
 and digital glitch post-processing effects. It reproduces video glitches with
 lightweight full-screen passes and camera-attached controllers.
