@@ -16,6 +16,12 @@ int _BlockCols;
 int _BlockRows;
 float _Threshold;
 
+half3 DamageColor(half3 color)
+{
+    color = LinearToSRGB(color);
+    return SRGBToLinear(half3(color.zx, 1 - color.y));
+}
+
 float4 Frag(Varyings input) : SV_Target
 {
     float2 uv = input.texcoord;
@@ -27,20 +33,20 @@ float4 Frag(Varyings input) : SV_Target
     // Noise sample
     float4 glitch = SAMPLE_TEXTURE2D_X(_NoiseTex, sampler_NoiseTex, float2(nx, 0.5));
     float4 glitch2 = glitch * glitch;
+    float glitch_ex = frac(glitch.x * 83.32);
 
     // Displacement
-    float2 uv2 = _Threshold < glitch2.z ? frac(uv + glitch.xy) : uv;
+    if (_Threshold < glitch2.z) uv = frac(uv + glitch.xy);
 
     // Color source samples
-    float4 src_cur = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv2);
-    float4 src_prev = SAMPLE_TEXTURE2D_X(_HistoryTex, sampler_LinearClamp, uv2);
+    float4 src_cur = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv);
+    float4 src_prev = SAMPLE_TEXTURE2D_X(_HistoryTex, sampler_LinearClamp, uv);
 
     // Sample selection
     float3 color = _Threshold < glitch2.w ? src_prev : src_cur;
 
-    // Negate
-    float3 neg = saturate(color.grb + (1 - dot(color, float3(1, 1, 1))) * 0.5);
-    color = _Threshold < glitch2.z ? neg : color;
+    // Damaged blocks
+    if (_Threshold * 0.2 + 0.8 < glitch_ex) color = DamageColor(color);
 
     return float4(color, src_cur.a);
 }

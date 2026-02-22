@@ -54,7 +54,8 @@ sealed class DigitalGlitchNoiseTexture : IDisposable
     static void UpdateNoise(ref NativeArray<uint> pixels, uint seed)
     {
         var random = new Unity.Mathematics.Random(seed);
-        for (var j = 0; j < 32; j++)
+        var iteration = random.NextInt(8, 48);
+        for (var j = 0; j < iteration; j++)
         {
             var start = random.NextInt(0, pixels.Length);
             var span1 = random.NextInt(1, 3);
